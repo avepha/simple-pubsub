@@ -7,6 +7,10 @@ import {
   MachineSoldSubscriber,
 } from './machine';
 import { IEvent, IPublishSubscribeService, PubSubService } from './pubsub';
+import {
+  LowStockWarningEvent,
+  LowStockWarningSubscriber,
+} from './machine/events/stock-warning';
 
 // helpers
 const randomMachine = (): string => {
@@ -33,31 +37,26 @@ const eventGenerator = (): IEvent => {
 (async () => {
   // create 3 machines with a quantity of 10 stock
   const machines: Machine[] = [
-    new Machine('001'),
-    new Machine('002'),
-    new Machine('003'),
+    new Machine('001', 2),
+    new Machine('002', 5),
+    new Machine('003', 5),
   ];
 
   // create a machine sale event subscriber. inject the machines (all subscribers should do this)
-  const machineSoldSubscriber = new MachineSoldSubscriber(machines);
-  const machineRefilledSubscriber = new MachineRefilledSubscriber(machines);
-
-  // create the PubSub service
   const pubSubService: IPublishSubscribeService = new PubSubService();
 
-  pubSubService.subscribe(MachineSoldEvent.EVENT_NAME, machineSoldSubscriber);
+  const soldSubscriber = new MachineSoldSubscriber(machines);
+  const refilledSubscriber = new MachineRefilledSubscriber(machines);
+  const lowStockWarningEvent = new LowStockWarningSubscriber(machines);
+
+  pubSubService.subscribe(MachineSoldEvent.EVENT_NAME, soldSubscriber);
+  pubSubService.subscribe(MachineRefilledEvent.EVENT_NAME, refilledSubscriber);
   pubSubService.subscribe(
-    MachineRefilledEvent.EVENT_NAME,
-    machineRefilledSubscriber,
+    LowStockWarningEvent.EVENT_NAME,
+    lowStockWarningEvent,
   );
 
-  const events = [
-    new MachineSoldEvent(1, '001'),
-    new MachineSoldEvent(2, '002'),
-    new MachineRefilledEvent(3, '003'),
-    new MachineRefilledEvent(5, '001'),
-    new MachineSoldEvent(1, '003'),
-  ];
+  const events = [new MachineSoldEvent(1, '001')];
 
   events.map((e) => pubSubService.publish(e));
 })();

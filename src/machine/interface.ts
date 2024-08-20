@@ -1,4 +1,4 @@
-import { IEvent, ISubscriber } from '../pubsub';
+import { IEvent, IPublishSubscribeService, ISubscriber } from '../pubsub';
 
 export interface IMachine {
   stockLevel: number;
@@ -14,14 +14,20 @@ export class Machine {
 
 export abstract class MachineSubscriber implements ISubscriber {
   protected readonly machines: Map<string, IMachine>;
+  pubSubService?: IPublishSubscribeService;
 
-  constructor(_machine: IMachine[]) {
+  constructor(_machine: IMachine[], _pubsubService?: IPublishSubscribeService) {
     this.machines = new Map();
     _machine.map((machine) => this.machines.set(machine.id, machine));
+    this.pubSubService = _pubsubService;
   }
 
   public handle(event: IEvent): void {
     console.log('Subscriber received event', event);
+  }
+
+  public setPubSubService(pubsubService: IPublishSubscribeService): void {
+    this.pubSubService = pubsubService;
   }
 
   public registerMachine(machine: IMachine): void {

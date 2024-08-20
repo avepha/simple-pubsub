@@ -1,5 +1,6 @@
 import { IEvent } from '../../pubsub';
 import { MachineSubscriber } from '../interface';
+import { LowStockWarningEvent } from './stock-warning';
 
 export class MachineSoldEvent implements IEvent {
   static EVENT_NAME = 'machine_sold';
@@ -34,5 +35,11 @@ export class MachineSoldSubscriber extends MachineSubscriber {
 
     machine.stockLevel -= event.getSoldQuantity();
     this.log(event, machine);
+
+    if (machine.stockLevel < 3) {
+      this.pubSubService?.publish(
+        new LowStockWarningEvent(machine.stockLevel, machine.id),
+      );
+    }
   }
 }
