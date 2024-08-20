@@ -1,0 +1,17 @@
+{
+  "name": "simple-pubsub",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "ts-node src/app.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^22.4.1",
+    "prettier": "^3.3.3",
+    "ts-node": "^10.9.2"
+  }
+}
