@@ -21,14 +21,7 @@ export class Machine {
 }
 
 export abstract class MachineSubscriber implements ISubscriber {
-  pubSubService?: IPublishSubscribeService;
-
-  constructor(
-    protected readonly machineService: MachineService,
-    _pubsubService?: IPublishSubscribeService,
-  ) {
-    this.pubSubService = _pubsubService;
-  }
+  constructor(protected readonly machineService: MachineService) {}
 
   public handle(event: IEvent): void {
     console.log('Subscriber received event', event);
