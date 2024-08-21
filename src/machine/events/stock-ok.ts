@@ -7,6 +7,7 @@ export class StockLevelOkEvent implements IEvent {
   constructor(
     private readonly _currentStockLevel: number,
     private readonly _machineId: string,
+    private readonly _type: string = StockLevelOkEvent.EVENT_NAME,
   ) {}
 
   machineId(): string {

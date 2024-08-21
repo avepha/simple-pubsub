@@ -11,8 +11,10 @@ export class MachineService {
   ) {}
 
   public getById(id: string): IMachine | undefined {
-    // avoid referencing machine object
-    return Object.assign({}, this.machineRepository.getById(id));
+    const machine = this.machineRepository.getById(id);
+
+    // Avoid referencing machine object
+    return machine ? Object.assign({}, machine) : undefined;
   }
 
   public setStockLevel(machine: IMachine, stockLevel: number): IMachine {

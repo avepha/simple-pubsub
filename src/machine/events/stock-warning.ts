@@ -7,6 +7,7 @@ export class LowStockWarningEvent implements IEvent {
   constructor(
     private readonly _currentStockLevel: number,
     private readonly _machineId: string,
+    private readonly _type: string = LowStockWarningEvent.EVENT_NAME,
   ) {}
 
   machineId(): string {
