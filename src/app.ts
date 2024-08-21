@@ -11,6 +11,10 @@ import {
   LowStockWarningEvent,
   LowStockWarningSubscriber,
 } from './machine/events/stock-warning';
+import {
+  StockLevelOkEvent,
+  StockLevelOkSubscriber,
+} from './machine/events/stock-ok';
 
 // helpers
 const randomMachine = (): string => {
@@ -37,7 +41,7 @@ const eventGenerator = (): IEvent => {
 (async () => {
   // create 3 machines with a quantity of 10 stock
   const machines: Machine[] = [
-    new Machine('001', 2),
+    new Machine('001', 3),
     new Machine('002', 5),
     new Machine('003', 5),
   ];
@@ -48,15 +52,23 @@ const eventGenerator = (): IEvent => {
   const soldSubscriber = new MachineSoldSubscriber(machines);
   const refilledSubscriber = new MachineRefilledSubscriber(machines);
   const lowStockWarningEvent = new LowStockWarningSubscriber(machines);
+  const stockOkSubscriber = new StockLevelOkSubscriber(machines);
 
   pubSubService.subscribe(MachineSoldEvent.EVENT_NAME, soldSubscriber);
   pubSubService.subscribe(MachineRefilledEvent.EVENT_NAME, refilledSubscriber);
+  pubSubService.subscribe(StockLevelOkEvent.EVENT_NAME, stockOkSubscriber);
   pubSubService.subscribe(
     LowStockWarningEvent.EVENT_NAME,
     lowStockWarningEvent,
   );
 
-  const events = [new MachineSoldEvent(1, '001')];
+  // initial stock levels = 3
+  const events = [
+    new MachineSoldEvent(1, '001'), // 3 -> 2 -> fire low stock warning
+    new MachineSoldEvent(1, '001'), // 2 -> 1
+    new MachineRefilledEvent(5, '001'), // 1 -> 6 -> fire stock level ok
+    new MachineRefilledEvent(1, '001'), // 6 -> 7
+  ];
 
   events.map((e) => pubSubService.publish(e));
 })();

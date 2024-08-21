@@ -36,7 +36,8 @@ export class MachineSoldSubscriber extends MachineSubscriber {
     machine.stockLevel -= event.getSoldQuantity();
     this.log(event, machine);
 
-    if (machine.stockLevel < 3) {
+    if (machine.state === 'OK' && machine.stockLevel < 3) {
+      machine.state = 'LOW_STOCK';
       this.pubSubService?.publish(
         new LowStockWarningEvent(machine.stockLevel, machine.id),
       );

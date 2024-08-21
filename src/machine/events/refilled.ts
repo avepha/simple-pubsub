@@ -1,5 +1,6 @@
 import { IEvent } from '../../pubsub';
 import { MachineSubscriber } from '../interface';
+import { StockLevelOkEvent } from './stock-ok';
 
 export class MachineRefilledEvent implements IEvent {
   static EVENT_NAME = 'machine_refilled';
@@ -32,5 +33,12 @@ export class MachineRefilledSubscriber extends MachineSubscriber {
 
     machine.stockLevel += event.getRefillQuantity();
     this.log(event, machine);
+
+    if (machine.state === 'LOW_STOCK' && machine.stockLevel >= 3) {
+      machine.state = 'OK';
+      this.pubSubService?.publish(
+        new StockLevelOkEvent(machine.stockLevel, machine.id),
+      );
+    }
   }
 }
