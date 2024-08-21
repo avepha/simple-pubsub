@@ -54,6 +54,7 @@ const eventGenerator = (): IEvent => {
   const lowStockWarningSubscriber = new LowStockWarningSubscriber(
     machineService,
   );
+
   pubSubService.subscribe(MachineSoldEvent.EVENT_NAME, soldSubscriber);
   pubSubService.subscribe(MachineRefilledEvent.EVENT_NAME, refilledSubscriber);
   pubSubService.subscribe(StockLevelOkEvent.EVENT_NAME, stockOkSubscriber);
