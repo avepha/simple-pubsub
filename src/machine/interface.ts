@@ -33,8 +33,4 @@ export abstract class MachineSubscriber implements ISubscriber {
   public handle(event: IEvent): void {
     console.log('Subscriber received event', event);
   }
-
-  public setPubSubService(pubsubService: IPublishSubscribeService): void {
-    this.pubSubService = pubsubService;
-  }
 }
