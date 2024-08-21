@@ -1,20 +1,16 @@
 // interfaces
 import {
+  LowStockWarningEvent,
+  LowStockWarningSubscriber,
   Machine,
   MachineRefilledEvent,
   MachineRefilledSubscriber,
   MachineSoldEvent,
   MachineSoldSubscriber,
-} from './machine';
-import { IEvent, IPublishSubscribeService, PubSubService } from './pubsub';
-import {
-  LowStockWarningEvent,
-  LowStockWarningSubscriber,
-} from './machine/events/stock-warning';
-import {
   StockLevelOkEvent,
   StockLevelOkSubscriber,
-} from './machine/events/stock-ok';
+} from './machine';
+import { IEvent, IPublishSubscribeService, PubSubService } from './pubsub';
 import { MachineRepository } from './machine/repository';
 import { MachineService } from './machine/service';
 
