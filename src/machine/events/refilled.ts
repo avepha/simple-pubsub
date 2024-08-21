@@ -25,20 +25,21 @@ export class MachineRefilledEvent implements IEvent {
 
 export class MachineRefilledSubscriber extends MachineSubscriber {
   handle(event: MachineRefilledEvent): void {
-    const machine = this.machines.get(event.machineId());
-    if (!machine) {
+    const currentMachine = this.machineService.getById(event.machineId());
+    if (!currentMachine) {
       console.log('No machine found for id', event.machineId());
       return;
     }
 
-    machine.stockLevel += event.getRefillQuantity();
-    this.log(event, machine);
-
-    if (machine.state === 'LOW_STOCK' && machine.stockLevel >= 3) {
-      machine.state = 'OK';
-      this.pubSubService?.publish(
-        new StockLevelOkEvent(machine.stockLevel, machine.id),
-      );
-    }
+    const stockLevel = currentMachine.stockLevel + event.getRefillQuantity();
+    const updatedMachine = this.machineService.setStockLevel(
+      currentMachine,
+      stockLevel,
+    );
+    console.log(
+      `[Refill] Machine ${event.machineId()} from ${
+        currentMachine.stockLevel
+      } to ${updatedMachine.stockLevel}`,
+    );
   }
 }

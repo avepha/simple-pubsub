@@ -4,10 +4,7 @@ export interface IEvent {
 }
 
 export interface ISubscriber {
-  pubSubService?: IPublishSubscribeService;
-
   handle(event: IEvent): void;
-  setPubSubService(pubSubService: IPublishSubscribeService): void;
 }
 
 export interface IPublishSubscribeService {
@@ -32,7 +29,6 @@ export class PubSubService implements IPublishSubscribeService {
       this.subscribers.set(type, []);
     }
 
-    handler.setPubSubService(this);
     this.subscribers.get(type)?.push(handler);
   }
 

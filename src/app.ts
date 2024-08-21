@@ -15,6 +15,8 @@ import {
   StockLevelOkEvent,
   StockLevelOkSubscriber,
 } from './machine/events/stock-ok';
+import { MachineRepository } from './machine/repository';
+import { MachineService } from './machine/service';
 
 // helpers
 const randomMachine = (): string => {
@@ -39,20 +41,21 @@ const eventGenerator = (): IEvent => {
 
 // program
 (async () => {
-  // create 3 machines with a quantity of 10 stock
-  const machines: Machine[] = [
+  const pubSubService: IPublishSubscribeService = new PubSubService();
+
+  const machineRepository = new MachineRepository([
     new Machine('001', 3),
     new Machine('002', 5),
     new Machine('003', 5),
-  ];
+  ]);
 
-  // create a machine sale event subscriber. inject the machines (all subscribers should do this)
-  const pubSubService: IPublishSubscribeService = new PubSubService();
+  const machineService = new MachineService(machineRepository, pubSubService);
 
-  const soldSubscriber = new MachineSoldSubscriber(machines);
-  const refilledSubscriber = new MachineRefilledSubscriber(machines);
-  const lowStockWarningEvent = new LowStockWarningSubscriber(machines);
-  const stockOkSubscriber = new StockLevelOkSubscriber(machines);
+  // TODO: might consider IoC container
+  const soldSubscriber = new MachineSoldSubscriber(machineService);
+  const refilledSubscriber = new MachineRefilledSubscriber(machineService);
+  const lowStockWarningEvent = new LowStockWarningSubscriber(machineService);
+  const stockOkSubscriber = new StockLevelOkSubscriber(machineService);
 
   pubSubService.subscribe(MachineSoldEvent.EVENT_NAME, soldSubscriber);
   pubSubService.subscribe(MachineRefilledEvent.EVENT_NAME, refilledSubscriber);

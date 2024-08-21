@@ -25,22 +25,22 @@ export class MachineSoldEvent implements IEvent {
 
 export class MachineSoldSubscriber extends MachineSubscriber {
   handle(event: MachineSoldEvent): void {
-    const machine = this.machines.get(event.machineId());
-
-    if (!machine) {
+    const currentMachine = this.machineService.getById(event.machineId());
+    if (!currentMachine) {
       console.log('No machine found for id', event.machineId());
-
       return;
     }
 
-    machine.stockLevel -= event.getSoldQuantity();
-    this.log(event, machine);
+    const stockLevel = currentMachine.stockLevel - event.getSoldQuantity();
+    const updatedMachine = this.machineService.setStockLevel(
+      currentMachine,
+      stockLevel,
+    );
 
-    if (machine.state === 'OK' && machine.stockLevel < 3) {
-      machine.state = 'LOW_STOCK';
-      this.pubSubService?.publish(
-        new LowStockWarningEvent(machine.stockLevel, machine.id),
-      );
-    }
+    console.log(
+      `[Sold] Machine ${event.machineId()} from ${
+        currentMachine.stockLevel
+      } to ${updatedMachine.stockLevel}`,
+    );
   }
 }

@@ -1,4 +1,5 @@
 import { IEvent, IPublishSubscribeService, ISubscriber } from '../pubsub';
+import { MachineService } from './service';
 
 type MachineState = 'OK' | 'LOW_STOCK';
 
@@ -20,12 +21,12 @@ export class Machine {
 }
 
 export abstract class MachineSubscriber implements ISubscriber {
-  protected readonly machines: Map<string, IMachine>;
   pubSubService?: IPublishSubscribeService;
 
-  constructor(_machine: IMachine[], _pubsubService?: IPublishSubscribeService) {
-    this.machines = new Map();
-    _machine.map((machine) => this.machines.set(machine.id, machine));
+  constructor(
+    protected readonly machineService: MachineService,
+    _pubsubService?: IPublishSubscribeService,
+  ) {
     this.pubSubService = _pubsubService;
   }
 
@@ -35,25 +36,5 @@ export abstract class MachineSubscriber implements ISubscriber {
 
   public setPubSubService(pubsubService: IPublishSubscribeService): void {
     this.pubSubService = pubsubService;
-  }
-
-  public registerMachine(machine: IMachine): void {
-    this.machines.set(machine.id, machine);
-  }
-
-  public unregisterMachine(machineId: string): void {
-    const isRemoved = this.machines.delete(machineId);
-    if (!isRemoved) {
-      console.log(`Machine ${machineId} not found`);
-    }
-  }
-
-  protected log(event: IEvent, machine: IMachine) {
-    console.log(
-      `[${event.type()}] Machine`,
-      machine.id,
-      'stock level is now',
-      machine.stockLevel,
-    );
   }
 }

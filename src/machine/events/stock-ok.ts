@@ -24,7 +24,7 @@ export class StockLevelOkEvent implements IEvent {
 
 export class StockLevelOkSubscriber extends MachineSubscriber {
   handle(event: StockLevelOkEvent): void {
-    const machine = this.machines.get(event.machineId());
+    const machine = this.machineService.getById(event.machineId());
 
     if (!machine) {
       console.log('No machine found for id', event.machineId());
@@ -32,6 +32,6 @@ export class StockLevelOkSubscriber extends MachineSubscriber {
       return;
     }
 
-    this.log(event, machine);
+    console.log(`[StockLevelOk] Machine ${event.machineId()}`);
   }
 }
