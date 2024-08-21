@@ -1,6 +1,5 @@
 import { IEvent } from '../../pubsub';
 import { MachineSubscriber } from '../interface';
-import { LowStockWarningEvent } from './stock-warning';
 
 export class MachineSoldEvent implements IEvent {
   static EVENT_NAME = 'machine_sold';
@@ -32,15 +31,10 @@ export class MachineSoldSubscriber extends MachineSubscriber {
     }
 
     const stockLevel = currentMachine.stockLevel - event.getSoldQuantity();
-    const updatedMachine = this.machineService.setStockLevel(
-      currentMachine,
-      stockLevel,
+    console.log(
+      `Sold(${event.getSoldQuantity()}) to ${event.machineId()}:  ${currentMachine.stockLevel} -> ${stockLevel}`,
     );
 
-    console.log(
-      `[Sold] Machine ${event.machineId()} from ${
-        currentMachine.stockLevel
-      } to ${updatedMachine.stockLevel}`,
-    );
+    this.machineService.setStockLevel(currentMachine, stockLevel);
   }
 }

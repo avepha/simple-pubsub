@@ -1,6 +1,5 @@
 import { IEvent } from '../../pubsub';
 import { MachineSubscriber } from '../interface';
-import { StockLevelOkEvent } from './stock-ok';
 
 export class MachineRefilledEvent implements IEvent {
   static EVENT_NAME = 'machine_refilled';
@@ -32,14 +31,10 @@ export class MachineRefilledSubscriber extends MachineSubscriber {
     }
 
     const stockLevel = currentMachine.stockLevel + event.getRefillQuantity();
-    const updatedMachine = this.machineService.setStockLevel(
-      currentMachine,
-      stockLevel,
-    );
     console.log(
-      `[Refill] Machine ${event.machineId()} from ${
-        currentMachine.stockLevel
-      } to ${updatedMachine.stockLevel}`,
+      `Refill(${event.getRefillQuantity()}) to ${event.machineId()}:  ${currentMachine.stockLevel} -> ${stockLevel}`,
     );
+
+    this.machineService.setStockLevel(currentMachine, stockLevel);
   }
 }
