@@ -50,15 +50,16 @@ const eventGenerator = (): IEvent => {
   // TODO: might consider IoC container
   const soldSubscriber = new MachineSoldSubscriber(machineService);
   const refilledSubscriber = new MachineRefilledSubscriber(machineService);
-  const lowStockWarningEvent = new LowStockWarningSubscriber(machineService);
   const stockOkSubscriber = new StockLevelOkSubscriber(machineService);
-
+  const lowStockWarningSubscriber = new LowStockWarningSubscriber(
+    machineService,
+  );
   pubSubService.subscribe(MachineSoldEvent.EVENT_NAME, soldSubscriber);
   pubSubService.subscribe(MachineRefilledEvent.EVENT_NAME, refilledSubscriber);
   pubSubService.subscribe(StockLevelOkEvent.EVENT_NAME, stockOkSubscriber);
   pubSubService.subscribe(
     LowStockWarningEvent.EVENT_NAME,
-    lowStockWarningEvent,
+    lowStockWarningSubscriber,
   );
 
   // initial stock levels = 3
